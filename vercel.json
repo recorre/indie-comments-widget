@@ -4,7 +4,7 @@
     "api/index.py": {
       "maxDuration": 10
     },
-    "api/_app.py": {
+    "api/app.py": {
       "maxDuration": 10
     }
   },
@@ -15,7 +15,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/api/_app.py"
+      "dest": "/api/app.py"
     }
   ]
 }
