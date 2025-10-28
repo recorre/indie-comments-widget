@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment Widget - Embed Example</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .example-section {
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+        }
+
+        .widget-container {
+            border: 2px dashed #007cba;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 6px;
+            background: white;
+        }
+
+        h1, h2, h3 {
+            color: #333;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .feature-list li:before {
+            content: "✅ ";
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💬 Comment Widget v2.0 - Embed Guide</h1>
+
+        <div class="example-section">
+            <h2>🚀 Quick Start</h2>
+            <p>Include the widget script and add the custom element to your page:</p>
+
+            <div class="code-block"><!-- Include the widget script -->
+<script src="https://cdn.jsdelivr.net/gh/renato/hackathon-nocodebackend@main/widget/dist/comment-widget.min.js"></script>
+
+<!-- Initialize the widget -->
+<script>
+CommentWidget.init({
+  threadId: 'example-page-1'
+});
+</script></div>
+
+            <div class="widget-container">
+                <!-- Live example -->
+                <comment-widget thread-id="embed-demo" theme="default"></comment-widget>
+            </div>
+        </div>
+
+        <div class="example-section">
+            <h2>⚙️ Configuration Options</h2>
+
+            <h3>Attributes:</h3>
+            <ul class="feature-list">
+                <li><code>thread-id</code> - Unique identifier for the comment thread (auto-generated from URL if not provided)</li>
+                <li><code>api-base-url</code> - API endpoint URL (defaults to production backend)</li>
+                <li><code>theme</code> - Theme name: default, dark, matrix, neocities, serene-mist, neon-pulse, geometric-prime, forest-flow, digital-chaos</li>
+                <li><code>max-depth</code> - Maximum nesting level for replies (default: 3)</li>
+            </ul>
+
+            <h3>Example with custom configuration:</h3>
+            <div class="code-block"><script>
+CommentWidget.init({
+  threadId: 'my-blog-post',
+  apiBaseUrl: 'https://my-api.com',
+  theme: 'dark',
+  maxDepth: 5
+});
+</script></div>
+        </div>
+
+        <div class="example-section">
+            <h2>🎨 Available Themes</h2>
+
+            <h3>Default Theme</h3>
+            <div class="widget-container">
+                <comment-widget thread-id="theme-default" theme="default"></comment-widget>
+            </div>
+
+            <h3>Dark Theme</h3>
+            <div class="widget-container">
+                <comment-widget thread-id="theme-dark" theme="dark"></comment-widget>
+            </div>
+
+            <h3>Matrix Theme</h3>
+            <div class="widget-container">
+                <comment-widget thread-id="theme-matrix" theme="matrix"></comment-widget>
+            </div>
+
+            <h3>NeoCities Theme</h3>
+            <div class="widget-container">
+                <comment-widget thread-id="theme-neocities" theme="neocities"></comment-widget>
+            </div>
+
+            <h3>Serene Mist Theme</h3>
+            <div class="widget-container">
+                <comment-widget thread-id="theme-serene-mist" theme="serene-mist"></comment-widget>
+            </div>
+
+            <h3>Neon Pulse Theme</h3>
+            <div class="widget-container">
+                <comment-widget thread-id="theme-neon-pulse" theme="neon-pulse"></comment-widget>
+            </div>
+
+            <h3>Geometric Prime Theme</h3>
+            <div class="widget-container">
+                <comment-widget thread-id="theme-geometric-prime" theme="geometric-prime"></comment-widget>
+            </div>
+
+            <h3>Forest Flow Theme</h3>
+            <div class="widget-container">
+                <comment-widget thread-id="theme-forest-flow" theme="forest-flow"></comment-widget>
+            </div>
+
+            <h3>Digital Chaos Theme</h3>
+            <div class="widget-container">
+                <comment-widget thread-id="theme-digital-chaos" theme="digital-chaos"></comment-widget>
+            </div>
+        </div>
+
+        <div class="example-section">
+            <h2>🔧 JavaScript API</h2>
+
+            <p>You can interact with the widget programmatically:</p>
+
+            <div class="code-block">// Get widget instance
+const widget = document.querySelector('comment-widget');
+
+// Refresh comments
+widget.refresh();
+
+// Get current comments
+const comments = widget.getComments();
+
+// Change theme
+widget.setTheme('dark');
+
+// Listen for theme changes
+document.addEventListener('commentWidgetThemeChange', (event) => {
+    console.log('Theme changed to:', event.detail.theme);
+});</div>
+        </div>
+
+        <div class="example-section">
+            <h2>📱 Responsive Design</h2>
+            <p>The widget is fully responsive and works great on mobile devices. Try resizing your browser window!</p>
+
+            <div class="widget-container">
+                <comment-widget thread-id="responsive-demo" theme="default"></comment-widget>
+            </div>
+        </div>
+
+        <div class="example-section">
+            <h2>🚀 Production Deployment</h2>
+
+            <h3>1. Build the widget (optional)</h3>
+            <div class="code-block"># Bundle and minify for production
+npm run build-widget</div>
+
+            <h3>2. Deploy backend</h3>
+            <p>Deploy your FastAPI backend to Vercel or any other platform.</p>
+
+            <h3>3. Update API URL</h3>
+            <div class="code-block"><comment-widget api-base-url="https://your-backend.vercel.app"></comment-widget></div>
+
+            <h3>4. Include on your site</h3>
+            <div class="code-block"><script src="https://cdn.jsdelivr.net/gh/renato/hackathon-nocodebackend@main/widget/dist/comment-widget.min.js"></script>
+<script>
+CommentWidget.init({
+  threadId: 'unique-page-id'
+});
+</script></div>
+        </div>
+
+        <div class="example-section">
+            <h2>✨ Features</h2>
+            <ul class="feature-list">
+                <li>Real-time comment loading and submission</li>
+                <li>Nested replies with configurable depth</li>
+                <li>Multiple beautiful themes</li>
+                <li>Email validation and spam protection</li>
+                <li>Responsive design for all devices</li>
+                <li>Customizable via CSS variables</li>
+                <li>Web Component for easy integration</li>
+                <li>Shadow DOM for style isolation</li>
+                <li>Accessibility features (ARIA labels, keyboard navigation)</li>
+                <li>Content moderation ready</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Load the widget script -->
+    <script type="module">
+        import './src/widget.js';
+    </script>
+</body>
+</html>

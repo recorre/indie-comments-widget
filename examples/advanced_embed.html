@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Widget Embed Example</title>
+    <!-- This file demonstrates an advanced embed of the comment widget with custom configuration -->
+</head>
+<body>
+    <h1>Advanced Comment Widget Embed</h1>
+    <p>This example shows advanced configuration options for the comment widget.</p>
+
+    <!-- Include the widget script -->
+    <script src="/widget/src/widget.js"></script>
+
+    <!-- Add the widget with custom configuration -->
+    <comment-widget
+        thread-id="advanced-example"
+        api-base-url="https://api.example.com"
+        theme="dark"
+        max-depth="5">
+    </comment-widget>
+
+    <script>
+        // Example of programmatic interaction
+        document.addEventListener('DOMContentLoaded', function() {
+            const widget = document.querySelector('comment-widget');
+
+            // Listen for theme changes
+            document.addEventListener('commentWidgetThemeChange', (event) => {
+                console.log('Theme changed to:', event.detail.theme);
+            });
+        });
+    </script>
+</body>
+</html>

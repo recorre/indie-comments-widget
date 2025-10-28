@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Comment Widget Dashboard{% endblock %}</title>
+
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/dashboard.css" rel="stylesheet">
+
+    <!-- Enhanced Theme System -->
+    <link href="/static/css/themes/enhanced-themes.css" rel="stylesheet">
+    <script src="/static/css/themes/theme-config.js" defer></script>
+
+    <style>
+        :root {
+            --primary-color: #007cba;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--light-color);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #005a87;
+            border-color: #005a87;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .theme-selector {
+            background: var(--light-color);
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--primary-color), #005a87);
+            color: white;
+        }
+
+        .stats-card.success {
+            background: linear-gradient(135deg, var(--success-color), #1e7e34);
+        }
+
+        .stats-card.warning {
+            background: linear-gradient(135deg, var(--warning-color), #d39e00);
+        }
+
+        .stats-card.danger {
+            background: linear-gradient(135deg, var(--danger-color), #bd2130);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-comments"></i> Comment Widget
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if user %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/sites">
+                            <i class="fas fa-globe"></i> Sites
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/threads">
+                            <i class="fas fa-list"></i> Threads
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/comments">
+                            <i class="fas fa-comments"></i> Moderation
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <ul class="navbar-nav">
+                    {% if user %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i> {{ user.name }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/dashboard">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">Register</a>
+                    </li>
+                    {% endif %}
+
+                    <!-- Enhanced Theme Selector -->
+                    <li class="nav-item dropdown">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="themeDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-palette"></i> Theme
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" id="theme-menu">
+                            <li><h6 class="dropdown-header">Choose Theme</h6></li>
+                            <li><a class="dropdown-item theme-option" href="#" data-theme="default">
+                                <div class="d-flex align-items-center">
+                                    <div class="theme-preview default me-2"></div>
+                                    <span>Default</span>
+                                </div>
+                            </a></li>
+                            <li><a class="dropdown-item theme-option" href="#" data-theme="dark">
+                                <div class="d-flex align-items-center">
+                                    <div class="theme-preview dark me-2"></div>
+                                    <span>Dark</span>
+                                </div>
+                            </a></li>
+                            <li><a class="dropdown-item theme-option" href="#" data-theme="matrix">
+                                <div class="d-flex align-items-center">
+                                    <div class="theme-preview matrix me-2"></div>
+                                    <span>Matrix</span>
+                                </div>
+                            </a></li>
+                            <li><a class="dropdown-item theme-option" href="#" data-theme="neocities">
+                                <div class="d-flex align-items-center">
+                                    <div class="theme-preview neocities me-2"></div>
+                                    <span>NeoCities</span>
+                                </div>
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">New Themes</h6></li>
+                            <li><a class="dropdown-item theme-option" href="#" data-theme="serene-mist">
+                                <div class="d-flex align-items-center">
+                                    <div class="theme-preview serene-mist me-2"></div>
+                                    <span>Serene Mist</span>
+                                </div>
+                            </a></li>
+                            <li><a class="dropdown-item theme-option" href="#" data-theme="neon-pulse">
+                                <div class="d-flex align-items-center">
+                                    <div class="theme-preview neon-pulse me-2"></div>
+                                    <span>Neon Pulse</span>
+                                </div>
+                            </a></li>
+                            <li><a class="dropdown-item theme-option" href="#" data-theme="geometric-prime">
+                                <div class="d-flex align-items-center">
+                                    <div class="theme-preview geometric-prime me-2"></div>
+                                    <span>Geometric Prime</span>
+                                </div>
+                            </a></li>
+                            <li><a class="dropdown-item theme-option" href="#" data-theme="forest-flow">
+                                <div class="d-flex align-items-center">
+                                    <div class="theme-preview forest-flow me-2"></div>
+                                    <span>Forest Flow</span>
+                                </div>
+                            </a></li>
+                            <li><a class="dropdown-item theme-option" href="#" data-theme="digital-chaos">
+                                <div class="d-flex align-items-center">
+                                    <div class="theme-preview digital-chaos me-2"></div>
+                                    <span>Digital Chaos</span>
+                                </div>
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/dashboard/theme-customizer">
+                                <i class="fas fa-edit"></i> Customize
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container-fluid py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light text-center py-3 mt-5">
+        <div class="container">
+            <small class="text-muted">
+                &copy; 2024 Comment Widget Dashboard. Built with FastAPI + Jinja2.
+            </small>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+
+    <script>
+        // Enhanced theme switching with smooth transitions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme dropdown functionality
+            const themeOptions = document.querySelectorAll('.theme-option');
+            themeOptions.forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const theme = this.getAttribute('data-theme');
+
+                    // Add transition class
+                    document.body.classList.add('theme-transitioning');
+
+                    // Apply theme with animation
+                    if (window.themeConfig) {
+                        window.themeConfig.setTheme(theme, true);
+                    }
+
+                    // Remove transition class after animation
+                    setTimeout(() => {
+                        document.body.classList.remove('theme-transitioning');
+                    }, 300);
+
+                    // Close dropdown
+                    const dropdown = bootstrap.Dropdown.getInstance(document.getElementById('themeDropdown'));
+                    if (dropdown) dropdown.hide();
+                });
+            });
+
+            // Initialize theme previews
+            initializeThemePreviews();
+
+            // Load saved theme
+            const savedTheme = localStorage.getItem('comment-widget-theme') || 'default';
+            if (window.themeConfig) {
+                window.themeConfig.setTheme(savedTheme, false);
+            }
+
+            // Listen for theme changes
+            document.addEventListener('themeChange', function(e) {
+                updateThemeUI(e.detail.theme);
+            });
+        });
+
+        function initializeThemePreviews() {
+            const previews = document.querySelectorAll('.theme-preview');
+            previews.forEach(preview => {
+                const theme = preview.closest('.theme-option').getAttribute('data-theme');
+                preview.className = `theme-preview ${theme}`;
+                preview.style.cssText = `
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 50%;
+                    border: 2px solid #ddd;
+                    display: inline-block;
+                `;
+
+                // Set theme-specific colors
+                const colors = {
+                    'default': '#007cba',
+                    'dark': '#4fc3f7',
+                    'matrix': '#0f0',
+                    'neocities': '#996699',
+                    'serene-mist': '#8b7e74',
+                    'neon-pulse': '#ffd700',
+                    'geometric-prime': '#ff4444',
+                    'forest-flow': '#7fb069',
+                    'digital-chaos': '#00ff41'
+                };
+
+                if (colors[theme]) {
+                    preview.style.backgroundColor = colors[theme];
+                }
+            });
+        }
+
+        function updateThemeUI(theme) {
+            // Update any theme-specific UI elements
+            const themeName = window.themeConfig ? window.themeConfig.getThemeConfig(theme).name : theme;
+            console.log(`Theme changed to: ${themeName}`);
+        }
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

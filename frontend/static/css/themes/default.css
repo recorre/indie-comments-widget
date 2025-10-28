@@ -1,0 +1,98 @@
+/* Default Theme - Dashboard Styles */
+
+:root {
+    --dashboard-bg: #f8f9fa;
+    --dashboard-text: #333;
+    --dashboard-card-bg: #ffffff;
+    --dashboard-card-border: #e0e0e0;
+    --dashboard-primary: #007cba;
+    --dashboard-success: #28a745;
+    --dashboard-danger: #dc3545;
+    --dashboard-warning: #ffc107;
+    --dashboard-info: #17a2b8;
+    --dashboard-muted: #6c757d;
+}
+
+body {
+    background-color: var(--dashboard-bg);
+    color: var(--dashboard-text);
+}
+
+.card {
+    background-color: var(--dashboard-card-bg);
+    border-color: var(--dashboard-card-border);
+}
+
+.text-primary {
+    color: var(--dashboard-primary) !important;
+}
+
+.text-success {
+    color: var(--dashboard-success) !important;
+}
+
+.text-danger {
+    color: var(--dashboard-danger) !important;
+}
+
+.text-warning {
+    color: var(--dashboard-warning) !important;
+}
+
+.text-info {
+    color: var(--dashboard-info) !important;
+}
+
+.text-muted {
+    color: var(--dashboard-muted) !important;
+}
+
+.bg-primary {
+    background-color: var(--dashboard-primary) !important;
+}
+
+.bg-success {
+    background-color: var(--dashboard-success) !important;
+}
+
+.bg-danger {
+    background-color: var(--dashboard-danger) !important;
+}
+
+.bg-warning {
+    background-color: var(--dashboard-warning) !important;
+}
+
+.bg-info {
+    background-color: var(--dashboard-info) !important;
+}
+
+.btn-primary {
+    background-color: var(--dashboard-primary);
+    border-color: var(--dashboard-primary);
+}
+
+.btn-primary:hover {
+    background-color: #005a87;
+    border-color: #005a87;
+}
+
+.btn-success {
+    background-color: var(--dashboard-success);
+    border-color: var(--dashboard-success);
+}
+
+.btn-danger {
+    background-color: var(--dashboard-danger);
+    border-color: var(--dashboard-danger);
+}
+
+.btn-warning {
+    background-color: var(--dashboard-warning);
+    border-color: var(--dashboard-warning);
+}
+
+.btn-info {
+    background-color: var(--dashboard-info);
+    border-color: var(--dashboard-info);
+}

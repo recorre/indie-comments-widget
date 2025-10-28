@@ -1,0 +1,41 @@
+{
+  "name": "comment-widget",
+  "version": "2.0.0",
+  "description": "A modern, embeddable comment system widget",
+  "main": "src/widget.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/widget.js --bundle --minify --outfile=dist/comment-widget.min.js --format=iife --global-name=CommentWidget --loader:.css=text --external:dompurify",
+    "dev": "live-server --port=3000 --entry-file=embed.html",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src/",
+    "format": "prettier --write src/"
+  },
+  "keywords": [
+    "comments",
+    "widget",
+    "embeddable",
+    "web-component",
+    "fastapi",
+    "real-time"
+  ],
+  "author": "Comment Widget Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "rollup": "^4.0.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "live-server": "^1.2.2",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "esbuild": "^0.19.0"
+  },
+  "dependencies": {
+    "crypto-js": "^4.2.0"
+  },
+  "browserslist": [
+    "defaults",
+    "not IE 11"
+  ]
+}

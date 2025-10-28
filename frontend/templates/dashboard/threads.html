@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Threads - Comment Widget Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0">Thread Management</h1>
+                <p class="text-muted">Manage your comment threads</p>
+            </div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createThreadModal">
+                <i class="fas fa-plus"></i> Create Thread
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Threads List -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-list"></i> Your Threads
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if threads %}
+                <div class="table-responsive">
+                    <table class="table table-hover" role="table" aria-label="Comment threads table">
+                        <thead>
+                            <tr role="row">
+                                <th role="columnheader" scope="col">ID</th>
+                                <th role="columnheader" scope="col">Title</th>
+                                <th role="columnheader" scope="col">URL</th>
+                                <th role="columnheader" scope="col">Page ID</th>
+                                <th role="columnheader" scope="col">Created</th>
+                                <th role="columnheader" scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for thread in threads %}
+                            <tr role="row">
+                                <td role="cell">{{ thread.id }}</td>
+                                <td role="cell">
+                                    <strong>{{ thread.title }}</strong>
+                                </td>
+                                <td role="cell">
+                                    <a href="{{ thread.url }}" target="_blank" class="text-decoration-none" aria-label="Open {{ thread.title }} in new tab">
+                                        <span aria-hidden="true">{{ thread.url[:50] }}{% if thread.url|length > 50 %}...{% endif %}</span>
+                                        <span class="sr-only">External link to {{ thread.url }}</span>
+                                    </a>
+                                </td>
+                                <td role="cell">
+                                    <code class="text-muted" aria-label="Page ID: {{ thread.external_page_id }}">{{ thread.external_page_id }}</code>
+                                </td>
+                                <td role="cell">
+                                    <time class="text-muted" datetime="{{ thread.created_at }}" aria-label="Created {{ thread.created_at[:19].replace('T', ' ') if thread.created_at else 'N/A' }}">
+                                        {{ thread.created_at[:19].replace('T', ' ') if thread.created_at else 'N/A' }}
+                                    </time>
+                                </td>
+                                <td role="cell">
+                                    <div class="btn-group" role="group" aria-label="Actions for thread {{ thread.title }}">
+                                        <a href="/widget/embed.html?thread={{ thread.external_page_id }}" target="_blank"
+                                            class="btn btn-sm btn-outline-info" aria-label="View widget for {{ thread.title }}">
+                                            <i class="fas fa-eye" aria-hidden="true"></i>
+                                            <span class="sr-only">View Widget</span>
+                                        </a>
+                                        <form method="post" action="/dashboard/threads/{{ thread.id }}/delete"
+                                              class="d-inline"
+                                              onsubmit="return confirm('Are you sure you want to delete this thread? This will also delete all associated comments.')">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Delete thread {{ thread.title }}">
+                                                <i class="fas fa-trash" aria-hidden="true"></i>
+                                                <span class="sr-only">Delete</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5" role="region" aria-label="No threads available">
+                    <i class="fas fa-list fa-4x text-muted mb-3" aria-hidden="true"></i>
+                    <h4 class="text-muted">No threads yet</h4>
+                    <p class="text-muted mb-4">Create your first thread to start collecting comments</p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createThreadModal" aria-label="Open create thread modal">
+                        <i class="fas fa-plus" aria-hidden="true"></i> Create Your First Thread
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Thread Modal -->
+<div class="modal fade" id="createThreadModal" tabindex="-1" role="dialog" aria-labelledby="createThreadModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createThreadModalLabel">
+                    <i class="fas fa-plus" aria-hidden="true"></i> Create New Thread
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+            </div>
+            <form method="post" action="/dashboard/threads" role="form" aria-labelledby="createThreadModalLabel">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="thread_title" class="form-label">Thread Title</label>
+                        <input type="text" class="form-control" id="thread_title" name="title"
+                                placeholder="e.g., Blog Post Comments" required aria-required="true" aria-describedby="title-help">
+                        <div id="title-help" class="sr-only">Enter a descriptive title for your comment thread</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="thread_url" class="form-label">Page URL</label>
+                        <input type="url" class="form-control" id="thread_url" name="url"
+                                placeholder="https://example.com/blog/post" required aria-required="true" aria-describedby="url-help">
+                        <div id="url-help" class="form-text">
+                            The URL where this comment thread will be embedded
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Cancel and close modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" aria-describedby="submit-help">
+                        <i class="fas fa-plus" aria-hidden="true"></i> Create Thread
+                    </button>
+                    <div id="submit-help" class="sr-only">Submit the form to create a new thread</div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Widget Embed Code Modal -->
+<div class="modal fade" id="embedModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-code"></i> Widget Embed Code
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">HTML Code:</label>
+                    <textarea class="form-control" id="embedCode" rows="4" readonly></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">JavaScript Code:</label>
+                    <textarea class="form-control" id="embedScript" rows="3" readonly></textarea>
+                </div>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    Copy and paste this code into your website where you want the comment widget to appear.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="copyEmbedCode()">Copy Code</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Simple URL title suggestion
+document.getElementById('thread_url').addEventListener('input', function() {
+    const url = this.value;
+    if (url) {
+        const titleField = document.getElementById('thread_title');
+        if (!titleField.value) {
+            try {
+                const urlObj = new URL(url);
+                const suggestedTitle = urlObj.pathname.split('/').pop() || urlObj.hostname;
+                titleField.value = suggestedTitle.replace(/[-_]/g, ' ').replace(/\b\w/g, function(l) {
+                    return l.toUpperCase();
+                });
+            } catch (e) {
+                // Invalid URL, skip title suggestion
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

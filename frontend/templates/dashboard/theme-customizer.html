@@ -1,0 +1,589 @@
+{% extends "base.html" %}
+
+{% block title %}Theme Customizer - Comment Widget Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0">Theme Customizer</h1>
+                <p class="text-muted">Customize your dashboard appearance</p>
+            </div>
+            <div>
+                <button type="button" class="btn btn-success" id="save-theme">
+                    <i class="fas fa-save"></i> Save Theme
+                </button>
+                <button type="button" class="btn btn-secondary" id="reset-theme">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Theme Preview -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-eye"></i> Live Preview
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="theme-preview-container">
+                    <!-- Navigation Preview -->
+                    <nav class="navbar navbar-expand-lg navbar-light mb-4" style="border-radius: 8px; padding: 1rem;">
+                        <a class="navbar-brand" href="#">Comment Widget</a>
+                        <div class="navbar-nav ms-auto">
+                            <a class="nav-link" href="#">Dashboard</a>
+                            <a class="nav-link" href="#">Threads</a>
+                            <a class="nav-link" href="#">Comments</a>
+                        </div>
+                    </nav>
+
+                    <!-- Card Preview -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">Sample Card</h6>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Card Title</h5>
+                            <p class="card-text">This is a sample card to preview your theme changes in real-time.</p>
+                            <div class="btn-group">
+                                <button class="btn btn-primary btn-sm">Primary</button>
+                                <button class="btn btn-success btn-sm">Success</button>
+                                <button class="btn btn-danger btn-sm">Danger</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Preview -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">Sample Form</h6>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label class="form-label">Sample Input</label>
+                                    <input type="text" class="form-control" placeholder="Enter text here">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Sample Select</label>
+                                    <select class="form-select">
+                                        <option>Option 1</option>
+                                        <option>Option 2</option>
+                                        <option>Option 3</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Table Preview -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Sample Table</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>John Doe</td>
+                                            <td>john@example.com</td>
+                                            <td><span class="badge bg-success">Active</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Jane Smith</td>
+                                            <td>jane@example.com</td>
+                                            <td><span class="badge bg-warning">Pending</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Controls -->
+    <div class="col-lg-4">
+        <!-- Color Pickers -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-palette"></i> Colors
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Primary Color</label>
+                    <div class="d-flex align-items-center">
+                        <input type="color" class="form-control form-control-color me-2" id="primary-color" value="#007cba">
+                        <input type="text" class="form-control" id="primary-color-hex" value="#007cba" readonly>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Background Color</label>
+                    <div class="d-flex align-items-center">
+                        <input type="color" class="form-control form-control-color me-2" id="background-color" value="#ffffff">
+                        <input type="text" class="form-control" id="background-color-hex" value="#ffffff" readonly>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Text Color</label>
+                    <div class="d-flex align-items-center">
+                        <input type="color" class="form-control form-control-color me-2" id="text-color" value="#333333">
+                        <input type="text" class="form-control" id="text-color-hex" value="#333333" readonly>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Border Color</label>
+                    <div class="d-flex align-items-center">
+                        <input type="color" class="form-control form-control-color me-2" id="border-color" value="#e0e0e0">
+                        <input type="text" class="form-control" id="border-color-hex" value="#e0e0e0" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typography -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-font"></i> Typography
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Font Family</label>
+                    <select class="form-select" id="font-family">
+                        <option value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">System Default</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="'Courier New', monospace">Courier New</option>
+                        <option value="Georgia, serif">Georgia</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Font Size</label>
+                    <input type="range" class="form-range" id="font-size" min="12" max="24" value="16">
+                    <div class="d-flex justify-content-between">
+                        <small>12px</small>
+                        <small class="text-center" id="font-size-value">16px</small>
+                        <small>24px</small>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Border Radius</label>
+                    <input type="range" class="form-range" id="border-radius" min="0" max="20" value="8">
+                    <div class="d-flex justify-content-between">
+                        <small>0px</small>
+                        <small class="text-center" id="border-radius-value">8px</small>
+                        <small>20px</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Presets -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-magic"></i> Presets
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-primary" onclick="applyPreset('default')">
+                        <i class="fas fa-palette"></i> Default
+                    </button>
+                    <button type="button" class="btn btn-outline-dark" onclick="applyPreset('dark')">
+                        <i class="fas fa-moon"></i> Dark
+                    </button>
+                    <button type="button" class="btn btn-outline-success" onclick="applyPreset('matrix')">
+                        <i class="fas fa-terminal"></i> Matrix
+                    </button>
+                    <button type="button" class="btn btn-outline-warning" onclick="applyPreset('neocities')">
+                        <i class="fas fa-star"></i> NeoCities
+                    </button>
+                    <hr>
+                    <button type="button" class="btn btn-outline-secondary" onclick="applyPreset('serene-mist')">
+                        <i class="fas fa-leaf"></i> Serene Mist
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" onclick="applyPreset('neon-pulse')">
+                        <i class="fas fa-bolt"></i> Neon Pulse
+                    </button>
+                    <button type="button" class="btn btn-outline-info" onclick="applyPreset('geometric-prime')">
+                        <i class="fas fa-shapes"></i> Geometric Prime
+                    </button>
+                    <button type="button" class="btn btn-outline-success" onclick="applyPreset('forest-flow')">
+                        <i class="fas fa-tree"></i> Forest Flow
+                    </button>
+                    <button type="button" class="btn btn-outline-warning" onclick="applyPreset('digital-chaos')">
+                        <i class="fas fa-crown"></i> Digital Chaos
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export/Import -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-exchange-alt"></i> Export/Import
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-info" id="export-theme">
+                        <i class="fas fa-download"></i> Export Theme
+                    </button>
+                    <button type="button" class="btn btn-outline-info" id="import-theme">
+                        <i class="fas fa-upload"></i> Import Theme
+                    </button>
+                    <input type="file" id="theme-file" accept=".json" style="display: none;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentTheme = {
+    colors: {
+        primary: '#007cba',
+        background: '#ffffff',
+        text: '#333333',
+        border: '#e0e0e0'
+    },
+    fonts: {
+        family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        size: '16px'
+    },
+    borderRadius: '8px'
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize color pickers
+    setupColorPickers();
+
+    // Initialize controls
+    setupControls();
+
+    // Load current theme
+    loadCurrentTheme();
+});
+
+function setupColorPickers() {
+    // Color picker change handlers
+    document.getElementById('primary-color').addEventListener('input', function() {
+        const hex = this.value;
+        document.getElementById('primary-color-hex').value = hex;
+        updateThemeVariable('--theme-primary', hex);
+    });
+
+    document.getElementById('background-color').addEventListener('input', function() {
+        const hex = this.value;
+        document.getElementById('background-color-hex').value = hex;
+        updateThemeVariable('--theme-background', hex);
+    });
+
+    document.getElementById('text-color').addEventListener('input', function() {
+        const hex = this.value;
+        document.getElementById('text-color-hex').value = hex;
+        updateThemeVariable('--theme-text', hex);
+    });
+
+    document.getElementById('border-color').addEventListener('input', function() {
+        const hex = this.value;
+        document.getElementById('border-color-hex').value = hex;
+        updateThemeVariable('--theme-border', hex);
+    });
+}
+
+function setupControls() {
+    // Font size slider
+    const fontSizeSlider = document.getElementById('font-size');
+    const fontSizeValue = document.getElementById('font-size-value');
+
+    fontSizeSlider.addEventListener('input', function() {
+        const size = this.value + 'px';
+        fontSizeValue.textContent = size;
+        updateThemeVariable('--theme-font-size', size);
+    });
+
+    // Border radius slider
+    const borderRadiusSlider = document.getElementById('border-radius');
+    const borderRadiusValue = document.getElementById('border-radius-value');
+
+    borderRadiusSlider.addEventListener('input', function() {
+        const radius = this.value + 'px';
+        borderRadiusValue.textContent = radius;
+        updateThemeVariable('--theme-border-radius', radius);
+    });
+
+    // Font family selector
+    document.getElementById('font-family').addEventListener('change', function() {
+        updateThemeVariable('--theme-font-family', this.value);
+    });
+
+    // Save theme
+    document.getElementById('save-theme').addEventListener('click', function() {
+        saveCustomTheme();
+    });
+
+    // Reset theme
+    document.getElementById('reset-theme').addEventListener('click', function() {
+        resetTheme();
+    });
+
+    // Export theme
+    document.getElementById('export-theme').addEventListener('click', function() {
+        exportTheme();
+    });
+
+    // Import theme
+    document.getElementById('import-theme').addEventListener('click', function() {
+        document.getElementById('theme-file').click();
+    });
+
+    document.getElementById('theme-file').addEventListener('change', function(e) {
+        importTheme(e.target.files[0]);
+    });
+}
+
+function updateThemeVariable(property, value) {
+    document.documentElement.style.setProperty(property, value);
+
+    // Update current theme object
+    if (property.startsWith('--theme-')) {
+        const key = property.replace('--theme-', '');
+        if (key.includes('-')) {
+            const parts = key.split('-');
+            const section = parts[0];
+            const subsection = parts.slice(1).join('-');
+            if (!currentTheme[section]) currentTheme[section] = {};
+            currentTheme[section][subsection] = value;
+        } else {
+            currentTheme[key] = value;
+        }
+    }
+}
+
+function loadCurrentTheme() {
+    // Load current theme values into controls
+    const rootStyles = getComputedStyle(document.documentElement);
+
+    document.getElementById('primary-color').value = rootStyles.getPropertyValue('--theme-primary').trim();
+    document.getElementById('primary-color-hex').value = rootStyles.getPropertyValue('--theme-primary').trim();
+
+    document.getElementById('background-color').value = rootStyles.getPropertyValue('--theme-background').trim();
+    document.getElementById('background-color-hex').value = rootStyles.getPropertyValue('--theme-background').trim();
+
+    document.getElementById('text-color').value = rootStyles.getPropertyValue('--theme-text').trim();
+    document.getElementById('text-color-hex').value = rootStyles.getPropertyValue('--theme-text').trim();
+
+    document.getElementById('border-color').value = rootStyles.getPropertyValue('--theme-border').trim();
+    document.getElementById('border-color-hex').value = rootStyles.getPropertyValue('--theme-border').trim();
+
+    const fontSize = rootStyles.getPropertyValue('--theme-font-size').trim();
+    document.getElementById('font-size').value = parseInt(fontSize);
+    document.getElementById('font-size-value').textContent = fontSize;
+
+    const borderRadius = rootStyles.getPropertyValue('--theme-border-radius').trim();
+    document.getElementById('border-radius').value = parseInt(borderRadius);
+    document.getElementById('border-radius-value').textContent = borderRadius;
+
+    const fontFamily = rootStyles.getPropertyValue('--theme-font-family').trim();
+    document.getElementById('font-family').value = fontFamily;
+}
+
+function applyPreset(presetName) {
+    const presets = {
+        'default': {
+            primary: '#007cba',
+            background: '#ffffff',
+            text: '#333333',
+            border: '#e0e0e0'
+        },
+        'dark': {
+            primary: '#4fc3f7',
+            background: '#2d2d2d',
+            text: '#e0e0e0',
+            border: '#444444'
+        },
+        'matrix': {
+            primary: '#0f0',
+            background: '#000000',
+            text: '#0f0',
+            border: '#0a0'
+        },
+        'neocities': {
+            primary: '#996699',
+            background: '#ccffff',
+            text: '#330033',
+            border: '#996699'
+        },
+        'serene-mist': {
+            primary: '#8b7e74',
+            background: '#f4f1ea',
+            text: '#3d3935',
+            border: '#c9b8a8'
+        },
+        'neon-pulse': {
+            primary: '#ffd700',
+            background: '#1a0a2e',
+            text: '#ffd700',
+            border: '#ffd700'
+        },
+        'geometric-prime': {
+            primary: '#ff4444',
+            background: '#f0e68c',
+            text: '#1a1a1a',
+            border: '#1a1a1a'
+        },
+        'forest-flow': {
+            primary: '#7fb069',
+            background: '#0d3b2e',
+            text: '#e8ddb5',
+            border: '#7fb069'
+        },
+        'digital-chaos': {
+            primary: '#00ff41',
+            background: '#0a0e27',
+            text: '#00ff41',
+            border: '#00ff41'
+        }
+    };
+
+    if (presets[presetName]) {
+        const preset = presets[presetName];
+        updateThemeVariable('--theme-primary', preset.primary);
+        updateThemeVariable('--theme-background', preset.background);
+        updateThemeVariable('--theme-text', preset.text);
+        updateThemeVariable('--theme-border', preset.border);
+
+        // Update color pickers
+        document.getElementById('primary-color').value = preset.primary;
+        document.getElementById('primary-color-hex').value = preset.primary;
+        document.getElementById('background-color').value = preset.background;
+        document.getElementById('background-color-hex').value = preset.background;
+        document.getElementById('text-color').value = preset.text;
+        document.getElementById('text-color-hex').value = preset.text;
+        document.getElementById('border-color').value = preset.border;
+        document.getElementById('border-color-hex').value = preset.border;
+    }
+}
+
+function saveCustomTheme() {
+    const themeName = prompt('Enter a name for your custom theme:');
+    if (themeName) {
+        const customTheme = {
+            name: themeName,
+            description: 'Custom theme created by user',
+            ...currentTheme
+        };
+
+        // Save to localStorage
+        const savedThemes = JSON.parse(localStorage.getItem('custom-themes') || '[]');
+        savedThemes.push(customTheme);
+        localStorage.setItem('custom-themes', JSON.stringify(savedThemes));
+
+        // Apply the theme
+        if (window.themeConfig) {
+            window.themeConfig.importTheme(customTheme);
+            window.themeConfig.setTheme(customTheme.name.toLowerCase().replace(/\s+/g, '-'));
+        }
+
+        alert('Theme saved successfully!');
+    }
+}
+
+function resetTheme() {
+    if (confirm('Are you sure you want to reset all changes?')) {
+        applyPreset('default');
+    }
+}
+
+function exportTheme() {
+    const themeData = {
+        name: 'Custom Theme',
+        description: 'Exported custom theme',
+        ...currentTheme
+    };
+
+    const dataStr = JSON.stringify(themeData, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+    const exportFileDefaultName = 'custom-theme.json';
+
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+}
+
+function importTheme(file) {
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const themeData = JSON.parse(e.target.result);
+
+                // Apply imported theme
+                if (themeData.colors) {
+                    Object.entries(themeData.colors).forEach(([key, value]) => {
+                        updateThemeVariable(`--theme-${key}`, value);
+                    });
+                }
+
+                if (themeData.fonts) {
+                    Object.entries(themeData.fonts).forEach(([key, value]) => {
+                        updateThemeVariable(`--theme-font-${key}`, value);
+                    });
+                }
+
+                if (themeData.borderRadius) {
+                    updateThemeVariable('--theme-border-radius', themeData.borderRadius);
+                }
+
+                alert('Theme imported successfully!');
+            } catch (error) {
+                alert('Error importing theme: ' + error.message);
+            }
+        };
+        reader.readAsText(file);
+    }
+}
+</script>
+{% endblock %}

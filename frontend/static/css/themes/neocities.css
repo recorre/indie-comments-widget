@@ -1,0 +1,87 @@
+/* NeoCities Theme - Global styles for the page */
+:root {
+  /* Pico CSS variables override for global page elements */
+  --pico-background-color: #ffffcc;
+  --pico-text-color: #330033;
+  --pico-border-color: #996699;
+  --pico-form-element-background-color: #ffff99;
+  --pico-form-element-border-color: #669966;
+  --pico-form-element-color: #330033;
+  --pico-card-background-color: #ccffff;
+  --pico-primary: #996699;
+  --pico-primary-inverse: #ffffcc;
+  --pico-primary-hover: #bba3c9;
+  --pico-muted-color: #6b7280;
+  --pico-code-background-color: #f3f4f6;
+  --pico-code-color: #330033;
+  --pico-contrast: #330033;
+}
+
+/* Page-level neocities theme */
+body {
+  background: linear-gradient(135deg, #ffffcc, #ffccff);
+  color: #330033;
+  background-attachment: fixed;
+}
+
+/* Background pattern for retro feel */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Add some retro elements */
+body::after {
+  content: "★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★";
+  display: block;
+  text-align: center;
+  padding: 10px;
+  color: #996699;
+  font-size: 1.2rem;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* Override Pico CSS variables for global elements */
+main,
+section,
+article,
+aside,
+header,
+footer,
+.container,
+.card {
+  background-color: #ccffff !important;
+  color: #330033 !important;
+  border: 2px dashed #996699 !important;
+}
+
+/* Form elements on the page */
+input, textarea, select, button {
+  background-color: #ffff99 !important;
+  border: 2px dotted #669966 !important;
+  color: #330033 !important;
+}
+
+button {
+  background-color: #ffccff !important;
+  border: 2px solid #996699 !important;
+}
+
+button:hover {
+  background-color: #ff99ff !important;
+}
+
+/* Add transitions for smooth theme switching */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}

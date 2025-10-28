@@ -1,0 +1,61 @@
+/* Matrix Theme - Global styles for the page */
+:root {
+  /* Pico CSS variables override for global page elements */
+  --pico-background-color: #000;
+  --pico-text-color: #0f0;
+  --pico-border-color: #0a0;
+  --pico-form-element-background-color: #010;
+  --pico-form-element-border-color: #080;
+  --pico-form-element-color: #0f0;
+  --pico-card-background-color: #000;
+  --pico-primary: #0f0;
+  --pico-primary-inverse: #000;
+  --pico-primary-hover: #0a0;
+  --pico-muted-color: #6b7280;
+  --pico-code-background-color: #1f2937;
+  --pico-code-color: #0f0;
+  --pico-contrast: #0f0;
+}
+
+/* Page-level matrix theme */
+body {
+  background-color: #000;
+  color: #0f0;
+  font-family: 'Courier New', monospace;
+  background-image: linear-gradient(rgba(0, 255, 0, 0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 255, 0, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Override Pico CSS variables for global elements */
+main,
+section,
+article,
+aside,
+header,
+footer,
+.container,
+.card {
+  background-color: #000 !important;
+  color: #0f0 !important;
+  border-color: #0a0 !important;
+  font-family: 'Courier New', monospace !important;
+}
+
+/* Form elements on the page */
+input, textarea, select, button {
+  background-color: #010 !important;
+  border-color: #080 !important;
+  color: #0f0 !important;
+  font-family: 'Courier New', monospace !important;
+}
+
+button:hover {
+  background-color: #040 !important;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.5) !important;
+}
+
+/* Add transitions for smooth theme switching */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}

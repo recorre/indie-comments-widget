@@ -1,0 +1,428 @@
+{% extends "base.html" %}
+
+{% block title %}Widget Configuration - Comment Widget Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0">Widget Configuration</h1>
+                <p class="text-muted">Customize your comment widget appearance and behavior</p>
+            </div>
+            <div>
+                <button type="button" class="btn btn-success" onclick="saveConfiguration()">
+                    <i class="fas fa-save"></i> Save Configuration
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Configuration Tabs -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="configTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="appearance-tab" data-bs-toggle="tab" data-bs-target="#appearance" type="button" role="tab">
+                            <i class="fas fa-palette"></i> Appearance
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="behavior-tab" data-bs-toggle="tab" data-bs-target="#behavior" type="button" role="tab">
+                            <i class="fas fa-cogs"></i> Behavior
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="embed-tab" data-bs-toggle="tab" data-bs-target="#embed" type="button" role="tab">
+                            <i class="fas fa-code"></i> Embed Code
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="configTabsContent">
+                    <!-- Appearance Tab -->
+                    <div class="tab-pane fade show active" id="appearance" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Theme Selection</h5>
+                                <div class="mb-3">
+                                    <label for="themeSelect" class="form-label">Widget Theme</label>
+                                    <select class="form-select" id="themeSelect">
+                                        <option value="default">Default</option>
+                                        <option value="dark">Dark</option>
+                                        <option value="light">Light</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                </div>
+
+                                <h5 class="mt-4">Colors</h5>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="primaryColor" class="form-label">Primary Color</label>
+                                            <input type="color" class="form-control form-control-color" id="primaryColor" value="#007bff">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="secondaryColor" class="form-label">Secondary Color</label>
+                                            <input type="color" class="form-control form-control-color" id="secondaryColor" value="#6c757d">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="backgroundColor" class="form-label">Background</label>
+                                            <input type="color" class="form-control form-control-color" id="backgroundColor" value="#ffffff">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="textColor" class="form-label">Text Color</label>
+                                            <input type="color" class="form-control form-control-color" id="textColor" value="#212529">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h5>Position & Layout</h5>
+                                <div class="mb-3">
+                                    <label for="positionSelect" class="form-label">Widget Position</label>
+                                    <select class="form-select" id="positionSelect">
+                                        <option value="bottom-right">Bottom Right</option>
+                                        <option value="bottom-left">Bottom Left</option>
+                                        <option value="top-right">Top Right</option>
+                                        <option value="top-left">Top Left</option>
+                                        <option value="inline">Inline</option>
+                                    </select>
+                                </div>
+
+                                <h5 class="mt-4">Custom CSS</h5>
+                                <div class="mb-3">
+                                    <label for="customCss" class="form-label">Custom CSS (Optional)</label>
+                                    <textarea class="form-control" id="customCss" rows="6" placeholder="/* Add your custom CSS here */"></textarea>
+                                    <div class="form-text">Advanced users only. This CSS will be applied to the widget.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Behavior Tab -->
+                    <div class="tab-pane fade" id="behavior" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Comment Settings</h5>
+                                <div class="mb-3">
+                                    <label for="maxComments" class="form-label">Maximum Comments to Display</label>
+                                    <input type="number" class="form-control" id="maxComments" min="1" max="500" value="50">
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="autoLoad" checked>
+                                        <label class="form-check-label" for="autoLoad">
+                                            Auto-load comments on page load
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showTimestamps" checked>
+                                        <label class="form-check-label" for="showTimestamps">
+                                            Show comment timestamps
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="allowAnonymous">
+                                        <label class="form-check-label" for="allowAnonymous">
+                                            Allow anonymous comments
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h5>Moderation Settings</h5>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="requireModeration" checked>
+                                        <label class="form-check-label" for="requireModeration">
+                                            Require comment moderation
+                                        </label>
+                                    </div>
+                                    <div class="form-text">When enabled, comments must be approved before they appear publicly.</div>
+                                </div>
+
+                                <h5 class="mt-4">Preview</h5>
+                                <div id="widgetPreview" class="border rounded p-3" style="min-height: 200px; background: #f8f9fa;">
+                                    <p class="text-muted text-center">Widget preview will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Embed Code Tab -->
+                    <div class="tab-pane fade" id="embed" role="tabpanel">
+                        <div class="row">
+                            <div class="col-12">
+                                <h5>Embed Code Generator</h5>
+                                <p class="text-muted">Generate embed code for your websites. Select a thread to get specific embed code.</p>
+
+                                <div class="mb-3">
+                                    <label for="threadSelect" class="form-label">Select Thread</label>
+                                    <select class="form-select" id="threadSelect">
+                                        <option value="">Choose a thread...</option>
+                                        <!-- Threads will be loaded dynamically -->
+                                    </select>
+                                </div>
+
+                                <div id="embedCodeSection" style="display: none;">
+                                    <h6>HTML Embed Code</h6>
+                                    <div class="mb-3">
+                                        <textarea class="form-control" id="embedHtml" rows="6" readonly></textarea>
+                                    </div>
+
+                                    <h6>JavaScript Code</h6>
+                                    <div class="mb-3">
+                                        <textarea class="form-control" id="embedScript" rows="4" readonly></textarea>
+                                    </div>
+
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-outline-primary" onclick="copyEmbedCode('html')">
+                                            <i class="fas fa-copy"></i> Copy HTML
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary" onclick="copyEmbedCode('script')">
+                                            <i class="fas fa-copy"></i> Copy Script
+                                        </button>
+                                        <button type="button" class="btn btn-outline-success" onclick="testEmbedCode()">
+                                            <i class="fas fa-play"></i> Test Code
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentConfig = {};
+let availableThreads = [];
+
+// Load configuration on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadConfiguration();
+    loadThreads();
+    setupEventListeners();
+});
+
+function setupEventListeners() {
+    // Update preview when configuration changes
+    document.querySelectorAll('input, select, textarea').forEach(element => {
+        element.addEventListener('change', updatePreview);
+    });
+
+    // Theme change
+    document.getElementById('themeSelect').addEventListener('change', function() {
+        updatePreview();
+    });
+
+    // Thread selection for embed code
+    document.getElementById('threadSelect').addEventListener('change', function() {
+        const threadId = this.value;
+        if (threadId) {
+            generateEmbedCode(threadId);
+        } else {
+            document.getElementById('embedCodeSection').style.display = 'none';
+        }
+    });
+}
+
+async function loadConfiguration() {
+    try {
+        const response = await fetch('/api/widget/config');
+        if (response.ok) {
+            currentConfig = await response.json();
+            populateForm(currentConfig);
+            updatePreview();
+        }
+    } catch (error) {
+        console.error('Failed to load configuration:', error);
+        showNotification('Failed to load configuration', 'error');
+    }
+}
+
+async function loadThreads() {
+    try {
+        const response = await fetch('/threads');
+        if (response.ok) {
+            const data = await response.json();
+            availableThreads = data.threads || [];
+
+            const threadSelect = document.getElementById('threadSelect');
+            threadSelect.innerHTML = '<option value="">Choose a thread...</option>';
+
+            availableThreads.forEach(thread => {
+                const option = document.createElement('option');
+                option.value = thread.external_page_id;
+                option.textContent = thread.title;
+                threadSelect.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Failed to load threads:', error);
+    }
+}
+
+function populateForm(config) {
+    document.getElementById('themeSelect').value = config.theme || 'default';
+    document.getElementById('positionSelect').value = config.position || 'bottom-right';
+    document.getElementById('maxComments').value = config.max_comments || 50;
+    document.getElementById('autoLoad').checked = config.auto_load !== false;
+    document.getElementById('showTimestamps').checked = config.show_timestamps !== false;
+    document.getElementById('allowAnonymous').checked = config.allow_anonymous || false;
+    document.getElementById('requireModeration').checked = config.require_moderation !== false;
+    document.getElementById('customCss').value = config.custom_css || '';
+
+    if (config.colors) {
+        document.getElementById('primaryColor').value = config.colors.primary || '#007bff';
+        document.getElementById('secondaryColor').value = config.colors.secondary || '#6c757d';
+        document.getElementById('backgroundColor').value = config.colors.background || '#ffffff';
+        document.getElementById('textColor').value = config.colors.text || '#212529';
+    }
+}
+
+function collectFormData() {
+    return {
+        theme: document.getElementById('themeSelect').value,
+        position: document.getElementById('positionSelect').value,
+        max_comments: parseInt(document.getElementById('maxComments').value),
+        auto_load: document.getElementById('autoLoad').checked,
+        show_timestamps: document.getElementById('showTimestamps').checked,
+        allow_anonymous: document.getElementById('allowAnonymous').checked,
+        require_moderation: document.getElementById('requireModeration').checked,
+        custom_css: document.getElementById('customCss').value,
+        colors: {
+            primary: document.getElementById('primaryColor').value,
+            secondary: document.getElementById('secondaryColor').value,
+            background: document.getElementById('backgroundColor').value,
+            text: document.getElementById('textColor').value
+        }
+    };
+}
+
+async function updatePreview() {
+    const config = collectFormData();
+
+    try {
+        const response = await fetch('/api/widget/preview', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(config)
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('widgetPreview').innerHTML = data.preview_html;
+        }
+    } catch (error) {
+        console.error('Failed to update preview:', error);
+    }
+}
+
+async function saveConfiguration() {
+    const config = collectFormData();
+
+    try {
+        const response = await fetch('/api/widget/config', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(config)
+        });
+
+        if (response.ok) {
+            showNotification('Configuration saved successfully!', 'success');
+            currentConfig = config;
+        } else {
+            throw new Error('Failed to save configuration');
+        }
+    } catch (error) {
+        console.error('Failed to save configuration:', error);
+        showNotification('Failed to save configuration', 'error');
+    }
+}
+
+async function generateEmbedCode(threadId) {
+    try {
+        const response = await fetch(`/api/widget/embed/${threadId}`);
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('embedHtml').value = data.embed_html;
+            document.getElementById('embedScript').value = data.embed_script;
+            document.getElementById('embedCodeSection').style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Failed to generate embed code:', error);
+        showNotification('Failed to generate embed code', 'error');
+    }
+}
+
+function copyEmbedCode(type) {
+    const elementId = type === 'html' ? 'embedHtml' : 'embedScript';
+    const textArea = document.getElementById(elementId);
+
+    textArea.select();
+    document.execCommand('copy');
+
+    showNotification(`${type.toUpperCase()} code copied to clipboard!`, 'success');
+}
+
+function testEmbedCode() {
+    const htmlCode = document.getElementById('embedHtml').value;
+    if (htmlCode) {
+        // Open a new window with the embed code for testing
+        const testWindow = window.open('', '_blank');
+        testWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Widget Test</title>
+                <style>body { font-family: Arial, sans-serif; padding: 20px; }</style>
+            </head>
+            <body>
+                <h1>Widget Embed Code Test</h1>
+                <p>This page tests your widget embed code:</p>
+                ${htmlCode}
+            </body>
+            </html>
+        `);
+        testWindow.document.close();
+    }
+}
+
+function showNotification(message, type = 'info') {
+    // Simple notification - you could enhance this
+    alert(message);
+}
+</script>
+{% endblock %}

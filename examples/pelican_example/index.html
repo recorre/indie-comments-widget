@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pelican Example - Comment Widget</title>
+    <!-- This file demonstrates embedding the comment widget in a Pelican static site -->
+</head>
+<body>
+    <h1>Pelican Integration Example</h1>
+    <p>This example shows how to integrate the comment widget into a Pelican-generated static site.</p>
+
+    <!-- Include the widget script -->
+    <script src="/widget/src/widget.js"></script>
+
+    <!-- Add the widget to your Pelican template -->
+    <comment-widget thread-id="{{ article.url }}"></comment-widget>
+
+    <!-- Pelican-specific notes:
+         - Replace {{ article.url }} with your actual Pelican template variable
+         - Ensure the widget script is loaded in your site's base template
+         - Configure the API base URL in your Pelican settings -->
+</body>
+</html>

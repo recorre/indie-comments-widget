@@ -1,0 +1,945 @@
+{% extends "base.html" %}
+
+{% block title %}Comment Moderation - Comment Widget Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0">Comment Moderation</h1>
+                <p class="text-muted">Review and moderate user comments</p>
+            </div>
+            <div class="btn-group" role="group">
+                <a href="#pending" class="btn btn-warning" data-bs-toggle="collapse">
+                    <i class="fas fa-clock"></i> Pending ({{ pending_comments|length }})
+                </a>
+                <a href="#approved" class="btn btn-success" data-bs-toggle="collapse">
+                    <i class="fas fa-check-circle"></i> Recent ({{ approved_comments|length }})
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter Controls -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-search"></i> Search & Filter Comments
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="search-input" class="form-label">Search Content</label>
+                        <input type="text" class="form-control" id="search-input" placeholder="Search in comment content...">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="status-filter" class="form-label">Status</label>
+                        <select class="form-select" id="status-filter">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="date-from" class="form-label">From Date</label>
+                        <input type="date" class="form-control" id="date-from">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="date-to" class="form-label">To Date</label>
+                        <input type="date" class="form-control" id="date-to">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-primary me-2" onclick="applyFilters()">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="clearFilters()">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Comments -->
+<div id="pending" class="collapse show">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock"></i> Comments Pending Approval
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if pending_comments %}
+                    <div class="list-group list-group-flush">
+                        {% for comment in pending_comments %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0">{{ comment.author_name }}</h6>
+                                        <small class="text-muted">
+                                            {{ comment.created_at[:19].replace('T', ' ') if comment.created_at else 'N/A' }}
+                                        </small>
+                                    </div>
+                                    <p class="mb-2">{{ comment.content }}</p>
+                                    <div class="d-flex align-items-center text-muted small">
+                                        <i class="fas fa-link"></i>
+                                        <span class="ms-1">Thread #{{ comment.thread_referencia_id }}</span>
+                                        {% if comment.parent_id %}
+                                        <span class="ms-3">
+                                            <i class="fas fa-reply"></i> Reply to #{{ comment.parent_id }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    {% if comment.replies %}
+                                    <div class="comment-replies mt-3" style="margin-left: 20px; border-left: 2px solid #dee2e6; padding-left: 10px;">
+                                        {% for reply in comment.replies %}
+                                        <div class="reply-item mb-2">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <h6 class="mb-0">{{ reply.author_name }}</h6>
+                                                <small class="text-muted">
+                                                    {{ reply.created_at[:19].replace('T', ' ') if reply.created_at else 'N/A' }}
+                                                </small>
+                                            </div>
+                                            <p class="mb-1">{{ reply.content }}</p>
+                                            <div class="d-flex align-items-center text-muted small">
+                                                <i class="fas fa-reply text-primary"></i>
+                                                <span class="ms-1">Reply</span>
+                                                {% if reply.parent_id %}
+                                                <span class="ms-2">to #{{ reply.parent_id }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="ms-3">
+                                    <form method="post" action="/dashboard/comments/{{ comment.id }}/moderate" class="d-inline">
+                                        <input type="hidden" name="action" value="approve">
+                                        <button type="submit" class="btn btn-sm btn-success me-1" title="Approve">
+                                            <i class="fas fa-check"></i> Approve
+                                        </button>
+                                    </form>
+                                    <form method="post" action="/dashboard/comments/{{ comment.id }}/moderate" class="d-inline">
+                                        <input type="hidden" name="action" value="reject">
+                                        <button type="submit" class="btn btn-sm btn-danger me-1" title="Reject">
+                                            <i class="fas fa-times"></i> Reject
+                                        </button>
+                                    </form>
+                                    <form method="post" action="/dashboard/comments/{{ comment.id }}/delete" class="d-inline"
+                                          onsubmit="return confirm('Are you sure you want to delete this comment?')">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <h5 class="text-success">All caught up!</h5>
+                        <p class="text-muted">No comments pending moderation</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Approved Comments -->
+<div id="approved" class="collapse">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-check-circle"></i> Recently Approved Comments
+                    </h5>
+                    {% if approved_comments %}
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-sm btn-outline-light" onclick="selectAllApproved()">
+                            <i class="fas fa-check-square"></i> Select All
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="bulkDeleteApproved()">
+                            <i class="fas fa-trash"></i> Bulk Delete
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if approved_comments %}
+                    <div class="list-group list-group-flush">
+                        {% for comment in approved_comments[:20] %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0">{{ comment.author_name }}</h6>
+                                        <small class="text-muted">
+                                            {{ comment.created_at[:19].replace('T', ' ') if comment.created_at else 'N/A' }}
+                                        </small>
+                                    </div>
+                                    <p class="mb-2">{{ comment.content }}</p>
+                                    <div class="d-flex align-items-center text-muted small">
+                                        <i class="fas fa-link"></i>
+                                        <span class="ms-1">Thread #{{ comment.thread_referencia_id }}</span>
+                                        {% if comment.parent_id %}
+                                        <span class="ms-3">
+                                            <i class="fas fa-reply"></i> Reply to #{{ comment.parent_id }}
+                                        </span>
+                                        {% endif %}
+                                        <span class="ms-3">
+                                            <i class="fas fa-check-circle text-success"></i> Approved
+                                        </span>
+                                    </div>
+                                    {% if comment.replies %}
+                                    <div class="comment-replies mt-3" style="margin-left: 20px; border-left: 2px solid #dee2e6; padding-left: 10px;">
+                                        {% for reply in comment.replies %}
+                                        <div class="reply-item mb-2">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <h6 class="mb-0">{{ reply.author_name }}</h6>
+                                                <small class="text-muted">
+                                                    {{ reply.created_at[:19].replace('T', ' ') if reply.created_at else 'N/A' }}
+                                                </small>
+                                            </div>
+                                            <p class="mb-1">{{ reply.content }}</p>
+                                            <div class="d-flex align-items-center text-muted small">
+                                                <i class="fas fa-reply text-primary"></i>
+                                                <span class="ms-1">Reply</span>
+                                                {% if reply.parent_id %}
+                                                <span class="ms-2">to #{{ reply.parent_id }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="ms-3 d-flex align-items-center">
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input approved-comment-checkbox" type="checkbox" value="{{ comment.id }}" id="approved-comment-{{ comment.id }}">
+                                        <label class="form-check-label visually-hidden" for="approved-comment-{{ comment.id }}">
+                                            Select comment
+                                        </label>
+                                    </div>
+                                    <form method="post" action="/dashboard/comments/{{ comment.id }}/delete" class="d-inline"
+                                          onsubmit="return confirm('Are you sure you want to delete this comment?')">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No approved comments yet</h5>
+                        <p class="text-muted">Approved comments will appear here</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Moderation Stats -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                <h4 class="mb-0">{{ pending_comments|length }}</h4>
+                <small class="text-muted">Pending Review</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                <h4 class="mb-0">{{ approved_comments|length }}</h4>
+                <small class="text-muted">Approved</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-times-circle fa-2x text-danger mb-2"></i>
+                <h4 class="mb-0">{{ (pending_comments + approved_comments)|selectattr('is_approved', 'equalto', 2)|list|length }}</h4>
+                <small class="text-muted">Rejected</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-comments fa-2x text-info mb-2"></i>
+                <h4 class="mb-0">{{ (pending_comments|length) + (approved_comments|length) }}</h4>
+                <small class="text-muted">Total</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-tasks"></i> Bulk Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <button type="button" class="btn btn-outline-secondary btn-lg w-100 mb-2" onclick="selectAll()">
+                            <i class="fas fa-check-square fa-2x mb-2"></i>
+                            <br>Select All
+                        </button>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <button type="button" class="btn btn-outline-success btn-lg w-100 mb-2" onclick="bulkModerate('approve')">
+                            <i class="fas fa-check-double fa-2x mb-2"></i>
+                            <br>Bulk Approve
+                        </button>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <button type="button" class="btn btn-outline-danger btn-lg w-100 mb-2" onclick="bulkModerate('reject')">
+                            <i class="fas fa-times fa-2x mb-2"></i>
+                            <br>Bulk Reject
+                        </button>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <button type="button" class="btn btn-outline-warning btn-lg w-100 mb-2" onclick="refreshComments()">
+                            <i class="fas fa-sync fa-2x mb-2"></i>
+                            <br>Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Real-time Controls -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-sync-alt"></i> Real-time Updates
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <button type="button" id="toggle-realtime" class="btn btn-warning btn-lg w-100 mb-2" onclick="toggleRealTimeUpdates()">
+                            <i class="fas fa-pause fa-2x mb-2"></i>
+                            <br>Pause Real-time
+                        </button>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <button type="button" class="btn btn-outline-info btn-lg w-100 mb-2" onclick="fetchCommentUpdates()">
+                            <i class="fas fa-sync fa-2x mb-2"></i>
+                            <br>Manual Refresh
+                        </button>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <small class="text-muted">
+                                <i class="fas fa-clock"></i> Auto-refresh: 30s
+                                <br>
+                                <span id="last-update" class="text-success">Last updated: Just now</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt"></i> Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 text-center">
+                        <button type="button" class="btn btn-outline-success btn-lg w-100 mb-2" onclick="approveAll()">
+                            <i class="fas fa-check-double fa-2x mb-2"></i>
+                            <br>Approve All Pending
+                        </button>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <a href="/dashboard" class="btn btn-outline-primary btn-lg w-100 mb-2">
+                            <i class="fas fa-tachometer-alt fa-2x mb-2"></i>
+                            <br>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Real-time comment updates
+let lastCommentCount = {
+    pending: {{ pending_comments|length }},
+    approved: {{ approved_comments|length }}
+};
+
+// Filter state
+let currentFilters = {
+    search: '',
+    status: '',
+    dateFrom: '',
+    dateTo: ''
+};
+let autoRefreshInterval = null;
+let isPollingEnabled = true;
+
+// Auto-refresh functionality
+function refreshComments() {
+    location.reload();
+}
+
+// Fetch updated comment counts
+async function fetchCommentUpdates() {
+    if (!isPollingEnabled) return;
+
+    try {
+        // Build query parameters with current filters
+        const params = new URLSearchParams({
+            limit: '1000',
+            ...buildFilterParams()
+        });
+
+        // Fetch pending comments
+        const pendingParams = new URLSearchParams(params);
+        pendingParams.set('status', 'pending');
+        const pendingResponse = await fetch(`/api/comments?${pendingParams}`);
+        const pendingData = await pendingResponse.json();
+        const pendingComments = Array.isArray(pendingData) ? pendingData : pendingData.data || [];
+
+        // Fetch approved comments
+        const approvedParams = new URLSearchParams(params);
+        approvedParams.set('status', 'approved');
+        const approvedResponse = await fetch(`/api/comments?${approvedParams}`);
+        const approvedData = await approvedResponse.json();
+        const approvedComments = Array.isArray(approvedData) ? approvedData : approvedData.data || [];
+
+        // Check for new comments
+        const newPendingCount = pendingComments.length;
+        const newApprovedCount = approvedComments.length;
+
+        // Update UI if counts changed
+        if (newPendingCount !== lastCommentCount.pending || newApprovedCount !== lastCommentCount.approved) {
+            updateCommentSections(pendingComments, approvedComments);
+            showNotification(`Comments updated: ${newPendingCount} pending, ${newApprovedCount} approved`);
+
+            lastCommentCount.pending = newPendingCount;
+            lastCommentCount.approved = newApprovedCount;
+            updateLastUpdateTime();
+        } else {
+            updateLastUpdateTime();
+        }
+
+    } catch (error) {
+        console.error('Error fetching comment updates:', error);
+    }
+}
+
+// Update comment sections without full page reload
+function updateCommentSections(pendingComments, approvedComments) {
+    // Update pending section
+    const pendingContainer = document.querySelector('#pending .card-body');
+    if (pendingContainer) {
+        if (pendingComments.length > 0) {
+            const pendingHtml = generateCommentsHtml(pendingComments, 'pending');
+            pendingContainer.innerHTML = pendingHtml;
+        } else {
+            pendingContainer.innerHTML = `
+                <div class="text-center py-4">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h5 class="text-success">All caught up!</h5>
+                    <p class="text-muted">No comments pending moderation</p>
+                </div>
+            `;
+        }
+    }
+
+    // Update approved section
+    const approvedContainer = document.querySelector('#approved .card-body');
+    if (approvedContainer) {
+        if (approvedComments.length > 0) {
+            const approvedHtml = generateCommentsHtml(approvedComments.slice(0, 20), 'approved');
+            approvedContainer.innerHTML = approvedHtml;
+        } else {
+            approvedContainer.innerHTML = `
+                <div class="text-center py-4">
+                    <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No approved comments yet</h5>
+                    <p class="text-muted">Approved comments will appear here</p>
+                </div>
+            `;
+        }
+    }
+
+    // Update stats
+    updateStats(pendingComments.length, approvedComments.length);
+
+    // Update button counts
+    updateButtonCounts(pendingComments.length, approvedComments.length);
+
+    // Re-initialize checkboxes and event listeners
+    initializeDynamicElements();
+}
+
+// Generate HTML for comments
+function generateCommentsHtml(comments, type) {
+    if (comments.length === 0) return '';
+
+    let html = '';
+    if (type === 'pending') {
+        html += '<div class="list-group list-group-flush">';
+    } else {
+        html += '<div class="list-group list-group-flush">';
+    }
+
+    comments.forEach(comment => {
+        html += generateCommentHtml(comment, type);
+    });
+
+    html += '</div>';
+    return html;
+}
+
+// Generate HTML for a single comment
+function generateCommentHtml(comment, type) {
+    const isApproved = type === 'approved';
+    const createdAt = comment.created_at ? comment.created_at.replace('T', ' ').substring(0, 16) : 'N/A';
+
+    let html = `
+        <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">${comment.author_name}</h6>
+                        <small class="text-muted">${createdAt}</small>
+                    </div>
+                    <p class="mb-2">${comment.content}</p>
+                    <div class="d-flex align-items-center text-muted small">
+                        <i class="fas fa-link"></i>
+                        <span class="ms-1">Thread #${comment.thread_referencia_id}</span>
+                        ${comment.parent_id ? `<span class="ms-3"><i class="fas fa-reply"></i> Reply to #${comment.parent_id}</span>` : ''}
+                        ${isApproved ? '<span class="ms-3"><i class="fas fa-check-circle text-success"></i> Approved</span>' : ''}
+                    </div>
+                </div>
+                <div class="ms-3">`;
+
+    if (type === 'pending') {
+        html += `
+                    <form method="post" action="/dashboard/comments/${comment.id}/moderate" class="d-inline">
+                        <input type="hidden" name="action" value="approve">
+                        <button type="submit" class="btn btn-sm btn-success me-1" title="Approve">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                    </form>
+                    <form method="post" action="/dashboard/comments/${comment.id}/moderate" class="d-inline">
+                        <input type="hidden" name="action" value="reject">
+                        <button type="submit" class="btn btn-sm btn-danger me-1" title="Reject">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    </form>
+                    <form method="post" action="/dashboard/comments/${comment.id}/delete" class="d-inline"
+                          onsubmit="return confirm('Are you sure you want to delete this comment?')">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>`;
+    } else {
+        html += `
+                    <div class="form-check me-3">
+                        <input class="form-check-input approved-comment-checkbox" type="checkbox" value="${comment.id}" id="approved-comment-${comment.id}">
+                        <label class="form-check-label visually-hidden" for="approved-comment-${comment.id}">Select comment</label>
+                    </div>
+                    <form method="post" action="/dashboard/comments/${comment.id}/delete" class="d-inline"
+                          onsubmit="return confirm('Are you sure you want to delete this comment?')">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>`;
+    }
+
+    html += `
+                </div>
+            </div>
+        </div>`;
+
+    return html;
+}
+
+// Update statistics cards
+function updateStats(pendingCount, approvedCount) {
+    const pendingStat = document.querySelector('.col-md-3:nth-child(1) h4');
+    const approvedStat = document.querySelector('.col-md-3:nth-child(2) h4');
+    const totalStat = document.querySelector('.col-md-3:nth-child(4) h4');
+
+    if (pendingStat) pendingStat.textContent = pendingCount;
+    if (approvedStat) approvedStat.textContent = approvedCount;
+    if (totalStat) totalStat.textContent = pendingCount + approvedCount;
+
+    // Update last update timestamp
+    const lastUpdateEl = document.getElementById('last-update');
+    if (lastUpdateEl) {
+        lastUpdateEl.textContent = 'Last updated: Just now';
+    }
+}
+
+// Update button counts
+function updateButtonCounts(pendingCount, approvedCount) {
+    const pendingBtn = document.querySelector('a[href="#pending"]');
+    const approvedBtn = document.querySelector('a[href="#approved"]');
+
+    if (pendingBtn) {
+        pendingBtn.innerHTML = `<i class="fas fa-clock"></i> Pending (${pendingCount})`;
+    }
+    if (approvedBtn) {
+        approvedBtn.innerHTML = `<i class="fas fa-check-circle"></i> Recent (${approvedCount})`;
+    }
+}
+
+// Show notification
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 5000);
+}
+
+// Initialize dynamic elements after content update
+function initializeDynamicElements() {
+    // Add checkboxes to pending comments
+    const pendingItems = document.querySelectorAll('#pending .list-group-item');
+    pendingItems.forEach((item, index) => {
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'form-check-input me-2 comment-checkbox';
+        checkbox.value = item.querySelector('form[action*="/moderate"]').action.split('/').pop();
+        checkbox.id = `comment-${index}`;
+
+        const label = document.createElement('label');
+        label.className = 'form-check-label visually-hidden';
+        label.htmlFor = `comment-${index}`;
+        label.textContent = 'Select comment';
+
+        const checkContainer = document.createElement('div');
+        checkContainer.className = 'form-check d-inline-block me-2';
+        checkContainer.appendChild(checkbox);
+        checkContainer.appendChild(label);
+
+        item.querySelector('.d-flex').insertBefore(checkContainer, item.querySelector('.flex-grow-1'));
+    });
+}
+
+// Toggle real-time updates
+function toggleRealTimeUpdates() {
+    isPollingEnabled = !isPollingEnabled;
+    const toggleBtn = document.getElementById('toggle-realtime');
+
+    if (isPollingEnabled) {
+        startPolling();
+        toggleBtn.innerHTML = '<i class="fas fa-pause"></i> Pause Real-time';
+        toggleBtn.classList.remove('btn-success');
+        toggleBtn.classList.add('btn-warning');
+        showNotification('Real-time updates enabled', 'success');
+    } else {
+        stopPolling();
+        toggleBtn.innerHTML = '<i class="fas fa-play"></i> Enable Real-time';
+        toggleBtn.classList.remove('btn-warning');
+        toggleBtn.classList.add('btn-success');
+        showNotification('Real-time updates paused', 'info');
+    }
+}
+
+// Start polling
+function startPolling() {
+    if (autoRefreshInterval) return;
+    autoRefreshInterval = setInterval(fetchCommentUpdates, 30000); // Poll every 30 seconds
+    showNotification('Real-time comment updates started', 'success');
+}
+
+// Update last update timestamp
+function updateLastUpdateTime() {
+    const lastUpdateEl = document.getElementById('last-update');
+    if (lastUpdateEl) {
+        const now = new Date();
+        lastUpdateEl.textContent = `Last updated: ${now.toLocaleTimeString()}`;
+    }
+}
+
+// Stop polling
+function stopPolling() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
+
+// Build filter parameters for API calls
+function buildFilterParams() {
+    const params = {};
+
+    if (currentFilters.search) {
+        params.search = currentFilters.search;
+    }
+    if (currentFilters.status) {
+        params.status = currentFilters.status;
+    }
+    if (currentFilters.dateFrom) {
+        params.date_from = currentFilters.dateFrom;
+    }
+    if (currentFilters.dateTo) {
+        params.date_to = currentFilters.dateTo;
+    }
+
+    return params;
+}
+
+// Apply filters and refresh comments
+async function applyFilters() {
+    // Get filter values
+    currentFilters.search = document.getElementById('search-input').value.trim();
+    currentFilters.status = document.getElementById('status-filter').value;
+    currentFilters.dateFrom = document.getElementById('date-from').value;
+    currentFilters.dateTo = document.getElementById('date-to').value;
+
+    // Stop polling temporarily
+    stopPolling();
+
+    try {
+        // Build query parameters
+        const params = new URLSearchParams({
+            limit: '1000',
+            ...buildFilterParams()
+        });
+
+        // Fetch filtered comments
+        const response = await fetch(`/api/comments?${params}`);
+        const data = await response.json();
+        const allComments = Array.isArray(data) ? data : data.data || [];
+
+        // Separate by status for display
+        const pendingComments = allComments.filter(c => c.is_approved === 0);
+        const approvedComments = allComments.filter(c => c.is_approved === 1);
+
+        // Update UI
+        updateCommentSections(pendingComments, approvedComments);
+        showNotification('Filters applied successfully');
+
+        // Update counts
+        lastCommentCount.pending = pendingComments.length;
+        lastCommentCount.approved = approvedComments.length;
+        updateLastUpdateTime();
+
+    } catch (error) {
+        console.error('Error applying filters:', error);
+        showNotification('Error applying filters', 'danger');
+    }
+
+    // Restart polling
+    startPolling();
+}
+
+// Clear all filters
+function clearFilters() {
+    document.getElementById('search-input').value = '';
+    document.getElementById('status-filter').value = '';
+    document.getElementById('date-from').value = '';
+    document.getElementById('date-to').value = '';
+
+    currentFilters = {
+        search: '',
+        status: '',
+        dateFrom: '',
+        dateTo: ''
+    };
+
+    // Reload page to show all comments
+    location.reload();
+}
+
+// Approve all pending comments
+function approveAll() {
+    if (confirm('Are you sure you want to approve all pending comments?')) {
+        const forms = document.querySelectorAll('form[action*="/moderate"] input[value="approve"]');
+        forms.forEach(form => form.closest('form').submit());
+    }
+}
+
+// Bulk moderation using the new /moderate endpoint
+async function bulkModerate(action) {
+    const checkboxes = document.querySelectorAll('.comment-checkbox:checked');
+    if (checkboxes.length === 0) {
+        alert('Please select comments to moderate');
+        return;
+    }
+
+    const commentIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+    if (!confirm(`Are you sure you want to ${action} ${commentIds.length} comment(s)?`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/moderate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                comment_ids: commentIds,
+                action: action
+            })
+        });
+
+        if (response.ok) {
+            alert(`Successfully ${action}d ${commentIds.length} comment(s)`);
+            location.reload();
+        } else {
+            alert('Error moderating comments');
+        }
+    } catch (error) {
+        console.error('Moderation error:', error);
+        alert('Error moderating comments');
+    }
+}
+
+// Select all checkboxes
+function selectAll() {
+    const checkboxes = document.querySelectorAll('.comment-checkbox');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    checkboxes.forEach(cb => cb.checked = !allChecked);
+}
+
+// Select all approved checkboxes
+function selectAllApproved() {
+    const checkboxes = document.querySelectorAll('.approved-comment-checkbox');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    checkboxes.forEach(cb => cb.checked = !allChecked);
+}
+
+// Bulk delete approved comments
+async function bulkDeleteApproved() {
+    const checkboxes = document.querySelectorAll('.approved-comment-checkbox:checked');
+    if (checkboxes.length === 0) {
+        alert('Please select comments to delete');
+        return;
+    }
+
+    const commentIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+    if (!confirm(`Are you sure you want to delete ${commentIds.length} approved comment(s)?`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/moderate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                comment_ids: commentIds,
+                action: 'delete'
+            })
+        });
+
+        if (response.ok) {
+            alert(`Successfully deleted ${commentIds.length} comment(s)`);
+            location.reload();
+        } else {
+            alert('Error deleting comments');
+        }
+    } catch (error) {
+        console.error('Delete error:', error);
+        alert('Error deleting comments');
+    }
+}
+
+// Auto-collapse sections based on content
+document.addEventListener('DOMContentLoaded', function() {
+    const pendingSection = document.getElementById('pending');
+    const approvedSection = document.getElementById('approved');
+
+    // Show approved section if no pending comments
+    if (pendingSection && !pendingSection.querySelector('.list-group-item')) {
+        approvedSection.classList.add('show');
+        pendingSection.classList.remove('show');
+    }
+
+    // Add checkboxes to pending comments
+    const pendingItems = document.querySelectorAll('#pending .list-group-item');
+    pendingItems.forEach((item, index) => {
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'form-check-input me-2 comment-checkbox';
+        checkbox.value = item.querySelector('form[action*="/moderate"]').action.split('/').pop();
+        checkbox.id = `comment-${index}`;
+
+        const label = document.createElement('label');
+        label.className = 'form-check-label visually-hidden';
+        label.htmlFor = `comment-${index}`;
+        label.textContent = 'Select comment';
+
+        const checkContainer = document.createElement('div');
+        checkContainer.className = 'form-check d-inline-block me-2';
+        checkContainer.appendChild(checkbox);
+        checkContainer.appendChild(label);
+
+        item.querySelector('.d-flex').insertBefore(checkContainer, item.querySelector('.flex-grow-1'));
+    });
+
+    // Start real-time polling
+    startPolling();
+});
+</script>
+{% endblock %}

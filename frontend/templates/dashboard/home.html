@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Comment Widget{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4">Dashboard</h1>
+            <p class="text-muted">Welcome to your comment moderation dashboard</p>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Comments
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.total or 0 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Approved
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.approved or 0 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending Review
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.pending or 0 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Rejected
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.rejected or 0 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="/dashboard/moderation" class="btn btn-warning btn-lg w-100">
+                                <i class="fas fa-clock fa-2x mb-2"></i>
+                                <br>Moderate Comments
+                                {% if stats.pending > 0 %}
+                                <span class="badge bg-danger">{{ stats.pending }}</span>
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="/dashboard/threads" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-list fa-2x mb-2"></i>
+                                <br>Manage Threads
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="/dashboard/sites" class="btn btn-success btn-lg w-100">
+                                <i class="fas fa-globe fa-2x mb-2"></i>
+                                <br>Manage Sites
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="/dashboard/widget" class="btn btn-info btn-lg w-100">
+                                <i class="fas fa-cogs fa-2x mb-2"></i>
+                                <br>Widget Settings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if stats.pending > 0 %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>{{ stats.pending }} comments</strong> are waiting for moderation.
+                        <a href="/dashboard/moderation" class="alert-link">Review them now</a>
+                    </div>
+                    {% endif %}
+
+                    <div class="list-group list-group-flush">
+                        {% if stats.total > 0 %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">System Status</h6>
+                                <small>Active</small>
+                            </div>
+                            <p class="mb-1">Comment system is running with {{ stats.threads or 0 }} active threads</p>
+                            <small class="text-muted">Last updated: Just now</small>
+                        </div>
+                        {% else %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Getting Started</h6>
+                                <small>Welcome</small>
+                            </div>
+                            <p class="mb-1">No comments yet. Create your first thread to start collecting feedback!</p>
+                            <small class="text-muted">
+                                <a href="/dashboard/threads" class="text-decoration-none">Create Thread</a>
+                            </small>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-refresh pending comments count
+function refreshStats() {
+    // This could be enhanced with real-time updates
+    console.log('Dashboard loaded successfully');
+}
+
+// Load dashboard stats
+document.addEventListener('DOMContentLoaded', function() {
+    refreshStats();
+});
+</script>
+{% endblock %}

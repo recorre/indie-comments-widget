@@ -1,0 +1,129 @@
+version: '3.8'
+
+services:
+  # Backend API Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: comment-widget-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - NOCODEBACKEND_API_KEY=${NOCODEBACKEND_API_KEY}
+      - INSTANCE=${INSTANCE}
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8080}
+      - RATE_LIMIT_REQUESTS=${RATE_LIMIT_REQUESTS:-1000}
+      - RATE_LIMIT_WINDOW=${RATE_LIMIT_WINDOW:-3600}
+    volumes:
+      - ./backend/logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - comment-widget-network
+
+  # Frontend Dashboard Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: comment-widget-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - ENVIRONMENT=production
+      - BACKEND_URL=http://backend:8000
+      - WIDGET_CDN_URL=${WIDGET_CDN_URL}
+      - GOOGLE_ANALYTICS_ID=${GOOGLE_ANALYTICS_ID}
+      - ENABLE_ANALYTICS=${ENABLE_ANALYTICS:-false}
+      - ENABLE_ERROR_REPORTING=${ENABLE_ERROR_REPORTING:-false}
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - comment-widget-network
+
+  # Widget Static File Server
+  widget:
+    build:
+      context: ./widget
+      dockerfile: Dockerfile
+    container_name: comment-widget-static
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - comment-widget-network
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: comment-widget-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - comment-widget-network
+
+  # PostgreSQL for analytics/metrics (optional)
+  postgres:
+    image: postgres:15-alpine
+    container_name: comment-widget-postgres
+    environment:
+      - POSTGRES_DB=comment_widget
+      - POSTGRES_USER=comment_widget
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U comment_widget -d comment_widget"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - comment-widget-network
+
+volumes:
+  redis_data:
+  postgres_data:
+
+networks:
+  comment-widget-network:
+    driver: bridge

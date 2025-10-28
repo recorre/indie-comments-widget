@@ -1,0 +1,8 @@
+/* Main CSS file for frontend styling */
+/* This file contains global styles for the application */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
