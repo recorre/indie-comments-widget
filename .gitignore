@@ -130,3 +130,4 @@ yarn-error.log*
 # Temporary files
 *.tmp
 *.swp
+.vercel
